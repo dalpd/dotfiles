@@ -1,0 +1,557 @@
+;=====================================================
+;
+;   To learn more about how to configure Polybar
+;   go to https://github.com/jaagr/polybar
+;
+;   The README contains alot of information
+;
+;=====================================================
+
+[global/wm]
+margin-top = 5
+margin-bottom = 5
+
+
+[bar/mybar]
+
+
+font-0 = Gidole:size=12;2
+font-1 = Font Awesome 5 Brands:size=10;1
+font-2 = WeatherIcons:size=13;3
+
+
+
+monitor = ${env:MONITOR}
+width = 100%
+height = 23
+offset-x = 0
+offset-y = 0
+fixed-center = true
+
+background = #000f0f0f
+;background = ${xrdb:color0:#6d15d8}
+
+foreground = #dfdfdf
+;foreground = ${xrdb:color15:#fff}
+
+;colora = ${xrdb:color0:#fff}
+;colorb = ${xrdb:color15:#6d15d8}
+
+colora = #000f0f0f
+colorb = #dfdfdf
+
+;colorat = ${xrdb:color0:#fff}
+;colorbt = ${xrdb:color15:#000}
+
+
+colorat = #dfdfdf
+colorbt = #000f0f0f
+
+warning = #f5a70a
+
+overline-size = 0
+overline-color = #151515
+underline-size = 0
+underline-color = #151515
+
+border-bottom-size = 0
+border-bottom-color = #333
+
+padding-left = 0
+padding-right = 0
+module-margin-left = 0
+module-margin-right = 0
+
+
+modules-left = i3 
+
+modules-center = space1  spacelt space1  weather space1 space1t space1 filesystem wlan space1 space1t space1 battery  space1 space1t space1 spotify
+space1 space1t space1 
+
+modules-right = 
+
+tray = right | left
+tray-position = right
+tray-padding = 60
+tray-detached = false
+tray-offset-y = 0
+tray-maxsize = 16
+tray-transparent = false
+enable-ipc = false
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+[bar/mybar2]
+
+font-0 = Gidole:size=12;2
+font-1 = Font Awesome:size=8;0
+font-2 = WeatherIcons:size=12;3
+monitor = ${env:MONITOR}
+width = 100%
+height = 23
+offset-x = 0
+offset-y = 0
+fixed-center = true
+bottom=true
+
+background = #000f0f0f
+;background = ${xrdb:color0:#6d15d8}
+
+foreground = #dfdfdf
+;foreground = ${xrdb:color15:#fff}
+
+;colora = ${xrdb:color0:#fff}
+;colorb = ${xrdb:color15:#6d15d8}
+
+colora = #000f0f0f
+colorb = #dfdfdf
+
+;colorat = ${xrdb:color0:#fff}
+;colorbt = ${xrdb:color15:#000}
+
+
+colorat = #dfdfdf
+colorbt = #000f0f0f
+
+warning = #f5a70a
+
+overline-size = 0
+overline-color = #151515
+underline-size = 0
+underline-color = #151515
+
+border-bottom-size = 0
+border-bottom-color = #333
+
+padding-left = 0
+padding-right = 0
+module-margin-left = 0
+module-margin-right = 0
+
+
+modules-left = xwindow
+modules-center = space1 cpu space1t space1 space1 space1t temperature space1 space1t space1 spacel memory 
+modules-right =  space1 space1t volume space1 space1t space1 date2 space1 space1t space1 date1 space1 space1t  
+
+tray-position =
+tray-padding = 10
+tray-detached = false
+tray-offset-y = 0
+tray-maxsize = 16
+tray-transparent = false
+enable-ipc = false
+
+
+;;;;;;;;;;
+
+[module/weather]
+type = custom/script
+exec = ~/.local/bin/weather
+interval = 300
+
+format-background = ${root.colora}
+format-foreground = ${root.colorb}
+
+
+[module/xwindow]
+type = internal/xwindow
+label-maxlen = 65
+label-padding = 1
+
+format-background = ${root.colora}
+format-foreground = ${root.colorb}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[module/spotify]
+type = custom/script
+exec = ~/.config/polybar/spotify
+interval = 2
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[module/i3]
+type = internal/i3
+
+
+; Only show workspaces defined on the same output as the bar
+;
+; Useful if you want to show monitor specific workspaces
+; on different bars
+;
+; Default: false
+pin-workspaces = true
+
+; This will split the workspace name on ':'
+; Default: false
+strip-wsnumbers = true
+
+; Sort the workspaces by index instead of the default
+; sorting that groups the workspaces by output
+; Default: false
+index-sort = true
+
+
+; Use fuzzy (partial) matching on labels when assigning 
+; icons to workspaces
+; Example: code;♚ will apply the icon to all workspaces 
+; containing 'code' in the label
+; Default: false
+fuzzy-match = false
+
+
+ws-icon-0 = "1;"
+ws-icon-1 = "2;"
+ws-icon-2 = "3;"
+ws-icon-3 = "4;"
+ws-icon-4 = "9;"
+
+ws-icon-5 = "10;"
+
+; Available tags:
+;   <label-state> (default) - gets replaced with <label-(focused|unfocused|visible|urgent)>
+;   <label-mode> (default)
+format = <label-state> <label-mode>
+
+; Available tokens:
+;   %mode%
+; Default: %mode%
+label-mode = %mode%
+label-mode-padding = 2
+label-mode-background = #e60053
+
+; Available tokens:
+;   %name%
+;   %icon%
+;   %index%
+;   %output%
+; Default: %icon%  %name%
+label-focused = %name%: %icon%
+label-focused-foreground = #ffffff
+label-focused-background = #3f3f3f
+label-focused-underline = #fba922
+label-focused-padding = 4
+
+; Available tokens:
+;   %name%
+;   %icon%
+;   %index%
+; Default: %icon%  %name%
+label-unfocused = %name%: %icon% 
+label-unfocused-padding = 4
+
+; Available tokens:
+;   %name%
+;   %icon%
+;   %index%
+; Default: %icon%  %name%
+label-visible = %icon%
+label-visible-underline = #555555
+label-visible-padding = 4
+
+; Available tokens:
+;   %name%
+;   %icon%
+;   %index%
+; Default: %icon%  %name%
+label-urgent = %name%: %icon%
+label-urgent-foreground = #000000
+label-urgent-background = #bd2c40
+label-urgent-padding = 4
+
+; Separator in between workspaces
+label-separator = |
+label-separator-padding = 2
+label-separator-foreground = #ffb52a
+
+
+
+[module/cpu]
+type = internal/cpu
+interval = 3
+label = CPU: %percentage%%
+
+format-background = ${root.colora}
+format-foreground = ${root.colorb}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[module/memory]
+type = internal/memory
+
+; Seconds to sleep between updates
+; Default: 1
+interval = 2
+
+format-background = #fff
+format-foreground = #000000
+
+format =  <label> 
+
+
+
+; Available tokens:
+;   %percentage_used% (default)
+;   %percentage_free%
+;   %gb_used%
+;   %gb_free%
+;   %gb_total%
+;   %mb_used%
+;   %mb_free%
+;   %mb_total%
+;   %percentage_swap_used%
+;   %percentage_swap_free%
+;   %mb_swap_total%
+;   %mb_swap_free%
+;   %mb_swap_used%
+;   %gb_swap_total%
+;   %gb_swap_free%
+;   %gb_swap_used%
+
+label = RAM %gb_used%/%gb_total%   
+
+; Only applies if <bar-used> is used
+;bar-used-indicator =
+;bar-used-width = 50
+;bar-used-foreground-0 = #55aa55
+;bar-used-foreground-1 = #557755
+;bar-used-foreground-2 = #f5a70a
+;bar-used-foreground-3 = #ff5555
+;bar-used-fill = ▐
+;bar-used-empty = ▐
+;bar-used-empty-foreground = #444444
+
+; Only applies if <ramp-used> is used
+ramp-used-0 = ▁
+ramp-used-1 = ▂
+ramp-used-2 = ▃
+ramp-used-3 = ▄
+ramp-used-4 = ▅
+ramp-used-5 = ▆
+ramp-used-6 = ▇
+ramp-used-7 = █
+
+; Only applies if <ramp-free> is used
+ramp-free-0 = ▁
+ramp-free-1 = ▂
+ramp-free-2 = ▃
+ramp-free-3 = ▄
+ramp-free-4 = ▅
+ramp-free-5 = ▆
+ramp-free-6 = ▇
+ramp-free-7 = █
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[module/filesystem]
+type = internal/fs
+
+; Mountpoints to display
+mount-0 = /
+;mount-1 = /etc
+;mount-2 = /var
+
+; Seconds to sleep between updates
+; Default: 30
+interval = 10
+
+; Display fixed precision values
+; Default: false
+fixed-values = true
+
+; Spacing between entries
+; Default: 2
+spacing = 4
+
+
+; Available tags:
+;   <label-mounted> (default)
+;   <bar-free>
+;   <bar-used>
+;   <ramp-capacity>
+format-mounted = <label-mounted>
+
+; Available tags:
+;   <label-unmounted> (default)
+format-unmounted = <label-unmounted>
+
+; Available tokens:
+;   %mountpoint%
+;   %type%
+;   %fsname%
+;   %percentage_free%
+;   %percentage_used%
+;   %total%
+;   %free%
+;   %used%
+; Default: %mountpoint% %percentage_free%%
+label-mounted =  %mountpoint% :  %%percentage_used% of %total% 
+
+; Available tokens:
+;   %mountpoint%
+; Default: %mountpoint% is not mounted
+label-unmounted = %mountpoint%: not mounted
+label-unmounted-foreground = #55
+
+[module/temperature]
+type = internal/temperature
+thermal-zone = 0
+warn-temperature = 50
+interval = 3
+
+format-background = ${root.colora}
+format-foreground = ${root.colorb}
+label-warn-background = ${root.colora}
+label-warn-foreground = ${root.warning}
+
+
+[module/wlan]
+type = internal/network
+interface = wlan0
+interval = 5
+
+
+; Accumulate values from all interfaces
+; when querying for up/downspeed rate
+; Default: false
+accumulate-stats = true
+
+; Available tags:
+;   <label-connected> (default)
+;   <ramp-signal>
+format-connected = <label-connected>
+
+; Available tags:
+;   <label-disconnected> (default)
+format-disconnected = <label-disconnected>
+
+; Available tags:
+;   <label-connected> (default)
+;   <label-packetloss>
+;   <animation-packetloss>
+format-packetloss = <animation-packetloss> <label-connected>
+
+; Available tokens:
+;   %ifname%    [wireless+wired]
+;   %local_ip%  [wireless+wired]
+;   %essid%     [wireless]
+;   %signal%    [wireless]
+;   %upspeed%   [wireless+wired]
+;   %downspeed% [wireless+wired]
+;   %linkspeed% [wired]
+; Default: %ifname% %local_ip%
+label-connected =     %%signal% at %essid%    
+label-connected-foreground = ${root.colorb}
+label-connected-background = ${root.colora}
+
+; Available tokens:
+;   %ifname%    [wireless+wired]
+; Default: (none)
+label-disconnected = not connected
+label-disconnected-foreground = #66ffffff
+
+
+
+[module/eth]
+type = internal/network
+interface = eth0
+interval = 3
+
+label-connected = %local_ip%
+label-connected-background = ${root.colora}
+label-connected-foreground = ${root.colorb}
+label-disconnected = %ifname%
+label-disconnected-background = ${root.colora}
+label-disconnected-foreground = ${root.colorb}
+
+
+[module/date1]
+type = custom/script
+exec = date +%H:%M:%S
+click-left = pkill -USR1 redshift
+scroll-up = light -A 5
+scroll-down = light -U 5
+interval = 1
+
+format-background = ${root.colora}
+format-foreground = ${root.colorb}
+
+
+[module/date2]
+type = custom/script
+exec = date +"%a, %b %d"
+click-left = gsimplecal
+interval = 60
+
+format-background = ${root.colora}
+format-foreground = ${root.colorb}
+
+
+[module/volume]
+type = internal/volume
+
+
+format-volume = <ramp-volume> <label-volume> <bar-volume>
+label-volume = %percentage%
+
+bar-volume-width = 10
+bar-volume-foreground = #aaff77
+bar-volume-indicator = ▓
+bar-volume-indicator-font = 6
+bar-volume-fill = ▒
+bar-volume-fill-font = 6
+bar-volume-fill-font-style = bold
+bar-volume-empty = ░
+bar-volume-empty-font = 6
+
+format-muted = <label-muted>
+label-muted =    muted   ░░░░░░░░░░
+label-muted-foreground = #66
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = AC0
+full-at = 100
+
+format-charging =  Charging -> <label-charging>
+label-charging-padding = 1
+format-charging-background = ${root.colora}
+format-charging-foreground = ${root.colorb}
+format-discharging =    : <label-discharging> 
+label-discharging-padding = 1
+format-discharging-background = ${root.colora}
+format-discharging-foreground = ${root.colorb}
+format-full = FULL 
+format-full-padding = 1
+format-full-background = ${root.colora}
+format-full-foreground = ${root.colorb}
+
+
+[module/space1]
+type = custom/text
+content = " "
+
+content-background = ${root.colora}
+content-foreground = ${root.colorb}
+
+
+[module/space1t]
+type = custom/text
+content = " "
+
+content-background = ${root.colorbt}
+content-foreground = ${root.colorat}
+
+
+[module/arrow]
+type = custom/text
+content = 
+
+content-background = ${root.colora}
+content-foreground = ${root.colorb}
+
+; vim:ft=dosini
