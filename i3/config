@@ -168,7 +168,7 @@ mode "resize" {
 # Pressing right will grow the window’s width.
 # Pressing up will shrink the window’s height.
 # Pressing down will grow the window’s height.
-	bindsym j resize shrink width 10 px or 10 ppt
+  	   	bindsym j resize shrink width 10 px or 10 ppt
 		bindsym k resize grow height 10 px or 10 ppt
 		bindsym l resize shrink height 10 px or 10 ppt
 		bindsym scedilla resize grow width 10 px or 10 ppt
@@ -235,11 +235,12 @@ bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
 exec_always feh --bg-scale ~/Documents/desktop.jpg
+
 exec dolphin4
 exec spotify
 # exec sudo docker run -it -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=unix$DISPLAY --device /dev/snd --name spotify     jess/spotify
 exec ~/Downloads/trunk/Telegram/Telegram
-exec_always --no-startup-id compton -f
+#exec_always --no-startup-id compton -f
 exec_always --no-startup-id ~/github/dotfiles/battery.sh
 
 # class                 border  bground text    indicator child_border
@@ -248,5 +249,4 @@ client.focused_inactive #333333 #5F676A #FFFFFF #484E50   #5F676A
 client.unfocused        #333333 #222222 #888888 #292D2E   #222222
 client.urgent           #FCB3FC #5D00FF #FFFFFF #900000   #900000
 client.placeholder      #000000 #0C0C0C #FFFFFF #000000   #0C0C0C
-
 client.background       #FFFFFF
