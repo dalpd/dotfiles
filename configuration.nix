@@ -20,7 +20,7 @@
   boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
 
   networking.hostName = "paxos"; # Define your hostname.
-  networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Set your time zone.
   time.timeZone = "Europe/Istanbul";
@@ -31,7 +31,7 @@
   networking.useDHCP = false;
   networking.interfaces.enp0s31f6.useDHCP = true;
   networking.interfaces.wlp1s0.useDHCP = true;
-
+  networking.networkmanager.enable = true;
   nixpkgs.config.allowUnfree = true; 
 
   # Configure network proxy if necessary
@@ -50,11 +50,20 @@
   
   # Enable the Plasma 5 Desktop Environment.
   services.xserver.displayManager.sddm.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
+  # services.xserver.desktopManager.plasma5.enable = true;
 
-  # Enable XMonad
-  services.xserver.windowManager.xmonad.enable = true;
-  services.xserver.windowManager.xmonad.enableContribAndExtras = true;
+  # Enable XMonad 
+  services.xserver = {
+    windowManager.xmonad = {
+      enable = true;
+      enableContribAndExtras = true;
+      extraPackages = haskellPackages: [
+	haskellPackages.xmonad
+        haskellPackages.xmonad-contrib
+        haskellPackages.xmonad-extras
+	];
+      };
+    };
 
   # Configure keymap in X11
   # services.xserver.layout = "us";
@@ -73,22 +82,44 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.dad = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "video" ]; # Enable ‘sudo’ for the user.
   };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    alacritty
     chromium curl emacs
-    firefox-devedition-bin
+    dolphin
+    okular
+
+    nixos-icons
+    breeze-icons
+    libsForQt5.breeze-icons
+    kdeFrameworks.breeze-icons
+    kdeFrameworks.oxygen-icons5
+
+    kdeApplications.kio-extras
+    kdeApplications.kdegraphics-thumbnailers
+
+    dmenu networkmanager networkmanager_dmenu
+    firefox-devedition-bin feh
     git gimp gwenview
-    haskellPackages.xmonad
-    haskellPackages.xmonad-contrib
-    haskellPackages.xmonad-extras
-    i3lock light rofi spotify
-    scrot tdesktop wget zlib
+    haskellPackages.ghc
+    haskellPackages.ghcid
+    haskellPackages.cabal-install
+    htop i3lock plasma-pa
+    haskellPackages.status-notifier-item
+    spotify scrot tdesktop wget zlib
+    font-awesome
+    iosevka
+    polybar
+    rofi
+
   ];
 
+  programs.light.enable = true;
+  
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;

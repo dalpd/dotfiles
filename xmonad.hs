@@ -1,51 +1,36 @@
-
---
--- xmonad example config file.
---
--- A template showing all available configuration hooks,
--- and how to override the defaults in your own xmonad.hs conf file.
---
--- Normally, you'd only override those defaults you care about.
---
-
-import XMonad
+-- | @dalpd's XMonad config.
+import qualified Data.Map        as M
+import Graphics.X11.ExtraTypes.XF86
 import System.Exit
 
-import qualified XMonad.StackSet as W
-import qualified Data.Map        as M
-
+import XMonad
+import XMonad.Actions.SpawnOn
+import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.EwmhDesktops as FS
+import XMonad.Hooks.ServerMode
+import XMonad.Hooks.SetWMName
 import XMonad.Layout.NoBorders
 import XMonad.Layout.TwoPane
 import XMonad.Layout.Tabbed
 import XMonad.Layout.Combo
-
 import XMonad.Layout.Maximize
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
-
-import XMonad.Layout.WindowNavigation
-
-import XMonad.Util.Run
-
-import XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.ServerMode
-
-
-import qualified XMonad.StackSet as S
-import XMonad.Actions.SpawnOn
-import XMonad.Hooks.SetWMName
 import XMonad.Layout.Spacing
-import Graphics.X11.ExtraTypes.XF86
-import XMonad.Hooks.EwmhDesktops as FS
---import System.Taffybar.Hooks.PagerHints (pagerHints)
+import XMonad.Layout.WindowNavigation
+import qualified XMonad.StackSet as W
+import qualified XMonad.StackSet as S
+import XMonad.Util.Run
+import XMonad.Util.SpawnOnce
+import Control.Monad
 
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
-myTerminal      = "konsole"
-myNavigator     = "firefox-dev"
+myTerminal      = "alacritty"
+myNavigator     = "firefox-devedition"
 myEditor        = "emacs"
 
 -- Width of the window border in pixels.
@@ -81,7 +66,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 
     -- launch a terminal
     [ ((modMask              , xK_Return), spawn $ XMonad.terminal conf)
-    , ((modMask              , xK_d     ), spawn "exec rofi -show run -lines 3 -eh 2 -width 100 -padding 400 -opacity \"65\"")
+    -- , ((modMask              , xK_d     ), spawn "dmenu_run -l 3")
+    -- , ((modMask              , xK_d     ), spawn "exec rofi -show run -lines 3 -eh 2 -width 100 -padding 400 -opacity \"65\"")
+    , ((modMask              , xK_d     ), spawn "rofi -no-config -no-lazy-grab -show drun -modi drun -theme ~/.config/polybar/hack/scripts/rofi/launcher.rasi")
     , ((modMask              , xK_f     ), sendMessage $ Toggle FULL)
     , ((modMask              , xK_v     ), sendMessage $ Toggle MIRROR)
     , ((modMask              , xK_BackSpace), withFocused (sendMessage . maximizeRestore))
@@ -278,12 +265,9 @@ myManageHook = manageDocks <+> composeAll
     , className =? "Tilda"           --> doFloat
     , resource  =? "desktop_window"  --> doIgnore
     , resource  =? "kdesktop"        --> doIgnore    
-    , className =? "Dolphin4"        --> doF (W.shift "4")
+    , className =? "Dolphin"        --> doF (W.shift "4")
     , className =? "TelegramDesktop" --> doF (W.shift "8")
     , className =? "Spotify"         --> doF (W.shift "9")
-
---    , className =? "Emacs"          --> doF (W.shift "2")
---    , title     =? "mutt"           --> doF (W.shift "3")
     ]
 
 -- Whether focus follows the mouse pointer.
@@ -305,12 +289,13 @@ myFocusFollowsMouse = True
 -- voir après
 
 myStartupHook = setWMName "dad's xmonad"
-              >> spawnHere "nm-applet"
-              >> spawnHere "xrandr –output HDMI-1 –left-of eDP-1 –auto"
-              >> spawnHere "~/Downloads/trunk/Telegram/Telegram"
+              >> spawnHere "xrandr --output HDMI-1 --left-of eDP-1 --auto"
+              >> spawnOnce "dolphin"
+              >> spawnOnce "telegram-desktop"
+              >> spawnOnce "spotify"
+              >> spawnOnce "status-notifier-watcher"
+              >> spawn "bash ~/.config/polybar/launch.sh --hack"
               >> spawnHere "feh --bg-fill ~/Documents/MG_6700.jpg"
-              >> spawn "~/.config/polybar/launch.sh"
-
 
 ------------------------------------------------------------------------
 --commands :: X [(String, X ())]
@@ -322,8 +307,7 @@ myStartupHook = setWMName "dad's xmonad"
 -- Run xmonad with the settings you specify. No need to modify this.
 --                
 main = do
-  h <- spawnPipe "xmobar  ~/.xmonad/xmobar.config"
-  xmonad $ ewmh defaultConfig {
+  xmonad $ ewmh $ defaultConfig {
                terminal           = myTerminal,
                focusFollowsMouse  = myFocusFollowsMouse,
                borderWidth        = myBorderWidth,
@@ -341,11 +325,5 @@ main = do
                layoutHook         = myLayout,
                manageHook         = myManageHook,
                startupHook        = myStartupHook,
---               handleEventHook    = myHandleEventHook
                handleEventHook    = handleEventHook defaultConfig <+> docksEventHook
-               
---               logHook            = dynamicLogWithPP xmobarPP {
---                                      ppLayout = const "",
---                                      ppTitle = xmobarColor "green"  "" . shorten 80,
---                                      ppOutput = hPutStrLn h }
              }
