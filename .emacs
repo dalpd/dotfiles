@@ -29,7 +29,7 @@
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(kaolin-themes ample-theme markdown-mode racket-mode haskell-mode)))
+   '(projectile kaolin-themes ample-theme markdown-mode racket-mode haskell-mode)))
 
 (package-initialize)
 
@@ -54,3 +54,8 @@
 
 (require 'kaolin-themes)
 (load-theme 'kaolin-valley-light t)
+
+(projectile-mode +1)
+
+(define-key projectile-mode-map (kbd "C-c ü") 'projectile-grep)
+(define-key projectile-mode-map (kbd "C-c ]") 'projectile-grep)

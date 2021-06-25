@@ -3,7 +3,11 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-
+let unstable =
+    import (builtins.fetchTarball https://github.com/NixOS/nixpkgs/archive/0747387223edf1aa5beaedf48983471315d95e16.tar.gz)
+    # reuse the current configuration
+    { config = config.nixpkgs.config; };
+in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -32,7 +36,9 @@
   networking.interfaces.enp0s31f6.useDHCP = true;
   networking.interfaces.wlp1s0.useDHCP = true;
   networking.networkmanager.enable = true;
-  nixpkgs.config.allowUnfree = true; 
+  nixpkgs.config.allowUnfree = true;
+
+  nix.useSandbox = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -82,14 +88,14 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.dad = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "video" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "video" "docker"]; # Enable ‘sudo’ for the user.
   };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     alacritty
-    chromium curl emacs
+    chromium curl unstable.emacs
     dolphin
     okular
 
@@ -103,23 +109,45 @@
     kdeApplications.kdegraphics-thumbnailers
 
     dmenu networkmanager networkmanager_dmenu
-    firefox-devedition-bin feh
+    unstable.firefox-devedition-bin feh
     git gimp gwenview
-    haskellPackages.ghc
+    # haskellPackages.ghc
+    unstable.haskellPackages.ghc
+    unstable.haskellPackages.zlib
+    # broken in both 20.09 and unstable
+    # haskellPackages.libpq
+    unstable.tdesktop
+    haskellPackages.postgresql-libpq
     haskellPackages.ghcid
     haskellPackages.cabal-install
     htop i3lock plasma-pa
     haskellPackages.status-notifier-item
-    spotify scrot tdesktop wget zlib
+    spotify scrot wget zlib
+    python39
+    unstable.texlive.combined.scheme-full
     font-awesome
     iosevka
     polybar
     rofi
-
+    unzip
+    gnumake
+    openssl
+    jq
+    irssi
+    guvcview
+    #docker
+    #docker-compose
+    pavucontrol
+    mpv
+    gcc
+    neofetch
+    tree
+    ripgrep
+    fd
   ];
 
   programs.light.enable = true;
-  
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -132,6 +160,10 @@
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
+  services.postgresql = {
+    enable = true;
+    package = pkgs.postgresql_12;
+    };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -139,6 +171,7 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
+  virtualisation.docker.enable = true;
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
@@ -146,6 +179,7 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "20.09"; # Did you read the comment?
+
 
 }
 
