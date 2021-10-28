@@ -29,7 +29,7 @@ import Control.Monad
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
-myTerminal      = "alacritty"
+myTerminal      = "termonad"
 myNavigator     = "firefox-devedition"
 myEditor        = "emacs"
 
@@ -146,6 +146,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     -- Restart xmonad
     , ((modMask              , xK_q     ), restart "xmonad" True)
     , ((modMask              , xK_k     ), spawn "i3lock")
+    -- , ((modMask              , xK_c     ), spawn "xdotool click --clearmodifiers 1")
     , ((0                    , xK_Print ), spawn "scrot -u ~/Pictures/Screenshot_%Y%m%d_%H%M%S.png")
     , ((0                    , xF86XK_AudioRaiseVolume), spawn "pactl set-sink-volume 0 +5%")
     , ((0                    , xF86XK_AudioLowerVolume), spawn "pactl set-sink-volume 0 -5%")
@@ -154,7 +155,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     , ((0                    , xF86XK_MonBrightnessDown), spawn "light -U 5")
     , ((0                    , xF86XK_Launch5), spawn "setxbmap us")
     , ((0                    , xF86XK_Launch9), spawn "setxbmap tr")
-    
     ]
     ++
     -- mod-[1..9] %! Switch to workspace N
@@ -289,13 +289,15 @@ myFocusFollowsMouse = True
 -- voir après
 
 myStartupHook = setWMName "dad's xmonad"
-              >> spawnHere "xrandr --output HDMI-1 --left-of eDP-1 --auto"
+              >> spawnHere "xrandr --output HDMI-1 --mode 2560x1440 --rate 75 --right-of DP-1-8"
+              >> spawnHere "xrandr --output DP-1-8 --mode 1920x1080 --rotate right"
               >> spawnOnce "dolphin"
               >> spawnOnce "telegram-desktop"
-              >> spawnOnce "spotify"
+              -- For some reason spotify launched during the init is all borked
+              -- >> spawnOnce "spotify"
               >> spawnOnce "status-notifier-watcher"
               >> spawn "bash ~/.config/polybar/launch.sh --hack"
-              >> spawnHere "feh --bg-fill ~/Documents/MG_6700.jpg"
+              >> spawnHere "feh --bg-fill ~/Documents/desktop.jpg"
 
 ------------------------------------------------------------------------
 --commands :: X [(String, X ())]
