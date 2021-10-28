@@ -5,20 +5,20 @@
 { config, pkgs, ... }:
 # Pinned at August 8, 2021
 # https://github.com/NixOS/nixpkgs/commit/439b1605227b8adb1357b55ce8529d541abbe9eb
-let
-  unstable = import (builtins.fetchTarball
-    "https://github.com/NixOS/nixpkgs/archive/439b1605227b8adb1357b55ce8529d541abbe9eb.tar.gz") {
-      config = config.nixpkgs.config;
-    };
-in {
-  imports = [ # Include the results of the hardware scan.
-    ./hardware-configuration.nix
-  ];
+let unstable =
+    import (builtins.fetchTarball https://github.com/NixOS/nixpkgs/archive/439b1605227b8adb1357b55ce8529d541abbe9eb.tar.gz) { config = config.nixpkgs.config; };
+    dadFork = import ./../../home/dad/src/nixpkgs { };
+in
+{
+  imports =
+    [ # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+    ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_latest;    
 
   networking.hostName = "yakushima"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -27,7 +27,7 @@ in {
   time.timeZone = "Europe/Istanbul";
 
   nixpkgs.config.allowUnfree = true;
-
+  
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
   # Per-interface useDHCP will be mandatory in the future, so this generated config
   # replicates the default behaviour.
@@ -50,6 +50,12 @@ in {
   #services.xserver.displayManager.sddm.enable = true;
   #services.xserver.desktopManager.plasma5.enable = true;
 
+  services.printing.enable = true;
+  services.printing.drivers = [ pkgs.gutenprint ];
+
+  hardware.sane.enable = true;
+  hardware.sane.extraBackends = [ pkgs.epkowa ];  
+  
   # Enable XMonad
   services.xserver = {
     windowManager.xmonad = {
@@ -59,10 +65,10 @@ in {
         haskellPackages.xmonad
         haskellPackages.xmonad-contrib
         haskellPackages.xmonad-extras
-      ];
+        ];
+      };
     };
-  };
-
+  
   # Configure keymap in X11
   # services.xserver.layout = "us";
   # services.xserver.xkbOptions = "eurosign:e";
@@ -73,18 +79,19 @@ in {
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
+  hardware.pulseaudio.extraModules = [ pkgs.pulseaudio-modules-bt ];
 
-  # Enable bluetooth
+  # Enable bluetooth    
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
-
+  
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.dad = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "video" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "video" "scanner" "lp"]; # Enable ‘sudo’ for the user.
   };
 
   fonts.fonts = with pkgs; [
@@ -94,9 +101,15 @@ in {
   ];
 
   fonts.fontconfig.defaultFonts = {
-    monospace = [ "Iosevka" ];
-    sansSerif = [ "Iosevka" ];
-    serif = [ "Iosevka" ];
+    monospace = [
+      "Iosevka"
+    ];
+    sansSerif = [
+      "Iosevka"
+    ];
+    serif = [
+      "Iosevka"
+    ];
   };
 
   # List packages installed in system profile. To search, run:
@@ -105,45 +118,34 @@ in {
     wget
     git
     alacritty
-    chromium
-    curl
-    emacs
+    chromium curl emacs
     dolphin
     okular
 
     nixos-icons
-
+    
     breeze-icons
-    oxygen-icons5
+    oxygen-icons5    
 
     libsForQt5.breeze-icons
     libsForQt5.oxygen-icons5
 
     libsForQt5.kio-extras
-    libsForQt5.kdegraphics-thumbnailers
+    libsForQt5.kdegraphics-thumbnailers    
+    
 
-    dmenu
-    networkmanager
-    networkmanager_dmenu
-    unstable.firefox-devedition-bin
-    feh
-    git
-    gimp
-    gwenview
+    dmenu networkmanager networkmanager_dmenu
+    unstable.firefox-devedition-bin feh
+    git gimp gwenview
     haskellPackages.ghc
     haskellPackages.zlib
     tdesktop
     haskellPackages.postgresql-libpq
     haskellPackages.ghcid
     haskellPackages.cabal-install
-    htop
-    i3lock
-    plasma-pa
+    htop i3lock plasma-pa
     haskellPackages.status-notifier-item
-    spotify
-    scrot
-    wget
-    zlib
+    spotify scrot wget zlib
     python39
     polybar
     rofi
@@ -162,9 +164,19 @@ in {
     fd
     pciutils
     killall
+    cabal2nix
     nixfmt
+    cargo
+    rustc
+    xclip
+    unstable.texlive.combined.scheme-full
+    xdotool
+    haskellPackages.termonad
   ];
 
+  # gamer dad
+  programs.steam.enable = true;
+  
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
