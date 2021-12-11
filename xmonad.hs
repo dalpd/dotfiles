@@ -25,6 +25,7 @@ import qualified XMonad.StackSet as S
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
 import Control.Monad
+import XMonad.Layout.MultiColumns
 
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
@@ -290,7 +291,7 @@ myFocusFollowsMouse = True
 
 myStartupHook = setWMName "dad's xmonad"
               >> spawnHere "xrandr --output HDMI-1 --mode 2560x1440 --rate 75 --right-of DP-1-8"
-              >> spawnHere "xrandr --output DP-1-8 --mode 1920x1080 --rotate right"
+              >> spawnHere "xrandr --output DP-1-8 --mode 1920x1080 --rotate left"
               >> spawnOnce "dolphin"
               >> spawnOnce "telegram-desktop"
               -- For some reason spotify launched during the init is all borked
