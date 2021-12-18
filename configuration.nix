@@ -20,6 +20,8 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;    
 
+  virtualisation.docker.enable = true;
+  
   networking.hostName = "yakushima"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -82,8 +84,8 @@ in
   hardware.pulseaudio.extraModules = [ pkgs.pulseaudio-modules-bt ];
 
   # Enable bluetooth    
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
+  # hardware.bluetooth.enable = true;
+  # services.blueman.enable = true;
   
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -91,7 +93,7 @@ in
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.dad = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "video" "scanner" "lp"]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "video" "scanner" "lp" "docker"]; # Enable ‘sudo’ for the user.
   };
 
   fonts.fonts = with pkgs; [
@@ -139,13 +141,13 @@ in
     git gimp gwenview
     haskellPackages.ghc
     haskellPackages.zlib
-    tdesktop
+    dadFork.tdesktop
     haskellPackages.postgresql-libpq
     haskellPackages.ghcid
     haskellPackages.cabal-install
     htop i3lock plasma-pa
     haskellPackages.status-notifier-item
-    spotify scrot wget zlib
+    unstable.spotify scrot wget zlib
     python39
     polybar
     rofi
@@ -172,6 +174,8 @@ in
     unstable.texlive.combined.scheme-full
     xdotool
     haskellPackages.termonad
+    postman
+    
   ];
 
   # gamer dad
@@ -195,6 +199,7 @@ in
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
+
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

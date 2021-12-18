@@ -290,7 +290,7 @@ myFocusFollowsMouse = True
 -- voir après
 
 myStartupHook = setWMName "dad's xmonad"
-              >> spawnHere "xrandr --output HDMI-1 --mode 2560x1440 --rate 75 --right-of DP-1-8"
+              >> spawnHere "xrandr --output HDMI-1 --mode 2560x1440 --rate 74.96 --right-of DP-1-8"
               >> spawnHere "xrandr --output DP-1-8 --mode 1920x1080 --rotate left"
               >> spawnOnce "dolphin"
               >> spawnOnce "telegram-desktop"
