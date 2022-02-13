@@ -23,7 +23,14 @@ in
   virtualisation.docker.enable = true;
   
   networking.hostName = "yakushima"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  #networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+
+  nix = {
+    package = pkgs.nixUnstable;
+    extraOptions = ''
+        experimental-features = nix-command flakes
+      '';
+      };
 
   # Set your time zone.
   time.timeZone = "Europe/Istanbul";
@@ -141,7 +148,7 @@ in
     git gimp gwenview
     haskellPackages.ghc
     haskellPackages.zlib
-    dadFork.tdesktop
+    unstable.tdesktop
     haskellPackages.postgresql-libpq
     haskellPackages.ghcid
     haskellPackages.cabal-install
@@ -170,12 +177,13 @@ in
     nixfmt
     cargo
     rustc
+    rust-analyzer
     xclip
     unstable.texlive.combined.scheme-full
     xdotool
     haskellPackages.termonad
     postman
-    
+    ripgrep
   ];
 
   # gamer dad
