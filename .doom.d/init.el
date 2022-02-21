@@ -16,23 +16,23 @@
        ;;layout            ; auie,ctsrnm is the superior home row
 
        :completion
-       ;;company           ; the ultimate code completion backend
+       company           ; the ultimate code completion backend
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
-       ivy                 ; a search engine for love and life
+       (ivy +icons +prescient) ; a search engine for love and life
 
        :ui
        ;;deft              ; notational velocity for Emacs
        doom                ; what makes DOOM look the way it does
-       ;;fill-column       ; a `fill-column' indicator
+       fill-column       ; a `fill-column' indicator
        hl-todo             ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        ;;hydra
        indent-guides       ; highlighted indent columns
-       ligatures           ; ligatures and symbols to make your code pretty again
+       ;; (ligatures +iosevka) ; ligatures and symbols to make your code pretty again
        modeline            ; snazzy, Atom-inspired modeline, plus API
-       ;;nav-flash         ; blink cursor line after big motions
+       nav-flash         ; blink cursor line after big motions
        ;;neotree           ; a project drawer, like NERDTree for vim
-       ;;ophints           ; highlight the region an operation acts on
+       ophints           ; highlight the region an operation acts on
        (popup +defaults)   ; tame sudden yet inevitable temporary windows
        ;;treemacs          ; a project drawer, like neotree but cooler
        unicode             ; extended unicode support for various languages
@@ -45,11 +45,12 @@
        :editor
        ;;(evil +everywhere); come to the dark side, we have cookies
        ;;file-templates    ; auto-snippets for empty files
-       ;;fold              ; (nigh) universal code folding
-       ;;(format +onsave)  ; automated prettiness
+       fold              ; (nigh) universal code folding
+       ;;format  ; automated prettiness
+       (format +onsave)
        ;;god               ; run Emacs commands without modifier keys
        ;;lispy             ; vim for lisp, for people who don't like vim
-       ;;multiple-cursors  ; editing in many places at once
+       multiple-cursors  ; editing in many places at once
        ;;objed             ; text object editing for the innocent
        ;;parinfer          ; turn lisp into python, sort of
        ;;rotate-text       ; cycle region at point between text candidates
@@ -84,6 +85,7 @@
        make              ; run make tasks from Emacs
        pdf               ; pdf enhancements
        rgb               ; creating color strings
+       lsp
 
        :os
        (:if IS-MAC macos)  ; improve compatibility with macOS
@@ -91,24 +93,17 @@
 
        :lang
        agda
-       ;;elm
-       data
        emacs-lisp
-       ;;erlang
        haskell
-       ;;idris
        json
-       ;;javascript
        latex
-       ;;lean
        markdown
-       nix
-       ;;ocaml
+       (nix +lsp)
        org
        purescript
        python
        racket
-       rust
+       (rust +lsp)
        sh
        sml
        yaml

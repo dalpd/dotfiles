@@ -21,8 +21,19 @@
 ;; font string. You generally only need these two:
 ;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
-(setq doom-font (font-spec :family "Iosevka" :size 23 :weight 'light :slant 'oblique)
-      doom-variable-pitch-font (font-spec :family "sans" :size 15 :weight 'regular))
+(setq doom-font (font-spec :family "Iosevka SS15" :size 20 :weight 'medium :slope 'italic))
+      ;; doom-variable-pitch-font (font-spec :family "Iosevka" :size 18 :weight 'regular))
+      ;; doom-big-font (font-spec :family "Iosevka" :size 48 :weight 'medium))
+
+(custom-set-faces!
+  `(font-lock-comment-face :foreground , (doom-lighten "#6e5f49" .10)
+                           :family , "Victor Mono"
+                           :weight , 'medium
+                           :slope , 'italic)
+  `(font-lock-doc-face     :foreground , (doom-lighten "#ff8c69" .0)
+                           :family , "Victor Mono"
+                           :weight , 'medium
+                           :slope , 'italic))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -57,4 +68,12 @@
 ;; they are implemented.
 
 (bind-key "C-c ]" #'+ivy/project-search)
+(bind-key "C-c '" #'+ivy/project-search-from-cwd)
 (bind-key "C-x g" #'magit-status)
+
+(bind-key "C-c 7" #'vimish-fold)
+(bind-key "C-c 8" #'vimish-fold-delete)
+(bind-key "C-c 9" #'vimish-fold-toggle)
+
+(setq dumb-jump-quiet t)
+(setq dump-jump-fallback-search nil)
