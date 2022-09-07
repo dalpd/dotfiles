@@ -146,7 +146,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     -- Restart xmonad
     , ((modMask              , xK_q     ), restart "xmonad" True)
     , ((modMask              , xK_k     ), spawn "i3lock")
-    , ((0                    , xK_Print ), spawn "scrot -u ~/Pictures/Screenshot_%Y%m%d_%H%M%S.png")
+    , ((0                    , xK_Print), spawn "scrot -u ~/Pictures/Screenshot_%Y%m%d_%H%M%S.png")
     , ((0                    , xF86XK_AudioRaiseVolume), spawn "pactl set-sink-volume 0 +5%")
     , ((0                    , xF86XK_AudioLowerVolume), spawn "pactl set-sink-volume 0 -5%")
     , ((0                    , xF86XK_AudioMute), spawn "pactl set-sink-mute 0 toggle")
@@ -289,13 +289,17 @@ myFocusFollowsMouse = True
 -- voir après
 
 myStartupHook = setWMName "dad's xmonad"
-              >> spawnHere "xrandr --output HDMI-1 --left-of eDP-1 --auto"
+              >> spawnHere "xrandr --output HDMI-1 --right-of eDP-1 --auto"
+              >> spawnOnce "xmodmap -e \"remove Lock = Caps_Lock\" -e \"keysym Caps_Lock = Print\""
+--              >> spawnHere "xrandr --output eDP-1 --off"
               >> spawnOnce "dolphin"
               >> spawnOnce "telegram-desktop"
               >> spawnOnce "spotify"
               >> spawnOnce "status-notifier-watcher"
               >> spawn "bash ~/.config/polybar/launch.sh --hack"
-              >> spawnHere "feh --bg-fill ~/Documents/MG_6700.jpg"
+              -- >> spawnHere "feh --bg-fill ~/Documents/MG_6700.jpg"
+              -- >> spawnHere "feh --bg-fill path/l ~/Documents/MG_6700.jpg --bg-fill path/r ~/Documents/akari.jpg"
+              >> spawnHere "feh --bg-fill path/l ~/Documents/wep.png --bg-fill path/r ~/Documents/wep.png"
 
 ------------------------------------------------------------------------
 --commands :: X [(String, X ())]

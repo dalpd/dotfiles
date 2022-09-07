@@ -1,10 +1,11 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, ... }:
 let unstable =
     import (builtins.fetchTarball https://github.com/NixOS/nixpkgs/archive/0747387223edf1aa5beaedf48983471315d95e16.tar.gz)
+    # reuse the current configuration
+    { config = config.nixpkgs.config; };
+
+    unstablePrime =
+    import (builtins.fetchTarball https://github.com/NixOS/nixpkgs/archive/294ef54a1e8cdcdd298c79edbdb3713ceae46988.tar.gz)
     # reuse the current configuration
     { config = config.nixpkgs.config; };
 in
@@ -12,6 +13,7 @@ in
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      # <home-manager/nixos>
     ];
 
   # Use the GRUB 2 boot loader.
@@ -53,10 +55,10 @@ in
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
-  
+
   # Enable the Plasma 5 Desktop Environment.
   services.xserver.displayManager.sddm.enable = true;
-  # services.xserver.desktopManager.plasma5.enable = true;
+  services.xserver.desktopManager.plasma5.enable = true;
 
   # Enable XMonad 
   services.xserver = {
@@ -82,6 +84,10 @@ in
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
+  # Enable bluetooth and get blueman-applet/blueman-manager
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
   # Enable touchpad support (enabled default in most desktopManager).
   services.xserver.libinput.enable = true;
 
@@ -91,9 +97,29 @@ in
     extraGroups = [ "wheel" "video" "docker"]; # Enable ‘sudo’ for the user.
   };
 
+  # home-manager.users.dad = { pkgs, ... }: {
+  #   home.packages = [ pkgs.git ];
+  # };  
+
+  # nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  #
+  # nix.extraOptions = ''
+  #   keep-outputs = true
+  #   keep-derivations = true
+  # '';
+  # 
+  # environment.pathsToLink = [
+  #   "/share/nix-direnv"
+  # ];
+  #
+  # nixpkgs.overlays = [
+  #   (self: super: { nix-direnv = super.nix-direnv.override { enableFlakes = true; }; } )
+  # ];
+  
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    git
     alacritty
     chromium curl unstable.emacs
     dolphin
@@ -110,19 +136,19 @@ in
 
     dmenu networkmanager networkmanager_dmenu
     unstable.firefox-devedition-bin feh
-    git gimp gwenview
+    gimp gwenview
     # haskellPackages.ghc
     unstable.haskellPackages.ghc
     unstable.haskellPackages.zlib
     # broken in both 20.09 and unstable
     # haskellPackages.libpq
-    unstable.tdesktop
+    unstablePrime.tdesktop
     haskellPackages.postgresql-libpq
     haskellPackages.ghcid
     haskellPackages.cabal-install
     htop i3lock plasma-pa
     haskellPackages.status-notifier-item
-    spotify scrot wget zlib
+    unstablePrime.spotify scrot wget zlib
     python39
     unstable.texlive.combined.scheme-full
     font-awesome
@@ -144,6 +170,10 @@ in
     tree
     ripgrep
     fd
+    unstable.zoom-us
+    direnv
+    nix-direnv
+    xorg.xmodmap
   ];
 
   programs.light.enable = true;
