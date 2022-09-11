@@ -26,6 +26,9 @@ import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
 import Control.Monad
 
+import XMonad.Hooks.StatusBar
+import XMonad.Hooks.StatusBar.PP
+
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
@@ -66,7 +69,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 
     -- launch a terminal
     [ ((modMask              , xK_Return), spawn $ XMonad.terminal conf)
-    -- , ((modMask              , xK_d     ), spawn "dmenu_run -l 3")
     -- , ((modMask              , xK_d     ), spawn "exec rofi -show run -lines 3 -eh 2 -width 100 -padding 400 -opacity \"65\"")
     , ((modMask              , xK_d     ), spawn "rofi -no-config -no-lazy-grab -show drun -modi drun -theme ~/.config/polybar/hack/scripts/rofi/launcher.rasi")
     , ((modMask              , xK_f     ), sendMessage $ Toggle FULL)
@@ -147,6 +149,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     , ((modMask              , xK_q     ), restart "xmonad" True)
     , ((modMask              , xK_k     ), spawn "i3lock")
     , ((0                    , xK_Print), spawn "scrot -u ~/Pictures/Screenshot_%Y%m%d_%H%M%S.png")
+    , ((0                    , xF86XK_LaunchA), spawn "scrot -u ~/Pictures/Screenshot_%Y%m%d_%H%M%S.png")
     , ((0                    , xF86XK_AudioRaiseVolume), spawn "pactl set-sink-volume 0 +5%")
     , ((0                    , xF86XK_AudioLowerVolume), spawn "pactl set-sink-volume 0 -5%")
     , ((0                    , xF86XK_AudioMute), spawn "pactl set-sink-mute 0 toggle")
@@ -237,8 +240,8 @@ myLayout = id
       -- Percent of screen to increment by when resizing panes
       delta   = 3/100
 
-      myTabConfig = defaultTheme { inactiveBorderColor = "#BFBFBF"
-                                 , activeTextColor = "#FFFFFF"}
+      myTabConfig = def { inactiveBorderColor = "#BFBFBF"
+                        , activeTextColor = "#FFFFFF"}
 
 ------------------------------------------------------------------------
 -- Window rules:
@@ -290,7 +293,7 @@ myFocusFollowsMouse = True
 
 myStartupHook = setWMName "dad's xmonad"
               >> spawnHere "xrandr --output HDMI-1 --right-of eDP-1 --auto"
-              >> spawnOnce "xmodmap -e \"remove Lock = Caps_Lock\" -e \"keysym Caps_Lock = Print\""
+              -- >> spawnOnce "xmodmap -e \"remove Lock = Caps_Lock\" -e \"keysym Caps_Lock = Print\""
 --              >> spawnHere "xrandr --output eDP-1 --off"
               >> spawnOnce "dolphin"
               >> spawnOnce "telegram-desktop"
@@ -302,16 +305,12 @@ myStartupHook = setWMName "dad's xmonad"
               >> spawnHere "feh --bg-fill path/l ~/Documents/wep.png --bg-fill path/r ~/Documents/wep.png"
 
 ------------------------------------------------------------------------
---commands :: X [(String, X ())]
---commands = defaultCommands
-
-------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.
 
 -- Run xmonad with the settings you specify. No need to modify this.
 --                
 main = do
-  xmonad $ ewmh $ defaultConfig {
+  xmonad $ ewmh $ def {
                terminal           = myTerminal,
                focusFollowsMouse  = myFocusFollowsMouse,
                borderWidth        = myBorderWidth,
@@ -328,6 +327,5 @@ main = do
                -- hooks, layouts
                layoutHook         = myLayout,
                manageHook         = myManageHook,
-               startupHook        = myStartupHook,
-               handleEventHook    = handleEventHook defaultConfig <+> docksEventHook
+               startupHook        = myStartupHook
              }
