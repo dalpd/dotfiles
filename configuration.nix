@@ -44,6 +44,12 @@
     extraGroups = [ "wheel" "video" "docker"]; # Enable ‘sudo’ for the user.
   };
 
+  fonts.fonts = with pkgs; [
+    font-awesome
+    iosevka
+    victor-mono
+  ];
+
   home-manager.users.dad = { pkgs, ... }: {
     
     home.homeDirectory = "/home/dad";
@@ -57,9 +63,17 @@
       historyIgnore = [ "ls" "ll"];
       initExtra = "export PATH=:$PATH:/home/dad/.local/bin:/home/dad/.emacs.d/bin";
     };
-
+    programs.git = {
+      enable = true;
+      userName = "dalpd";
+      userEmail = "denizalpd@ogr.iu.edu.tr";
+      extraConfig = {
+        core = { editor = "emacs"; }; 
+      };
+    };
     programs.emacs.enable = true;
     programs.home-manager.enable = true;    
+
     home.packages = (import ./home.nix pkgs).packages;    
   };  
 
@@ -74,8 +88,34 @@
     printing.enable = true;
 
     # Enable X11
-    xserver.enable = true;  
-    };
+    xserver.enable = true;
+
+    # Standalone compositor for Xorg
+    picom = {
+      enable = true;
+      backend = "glx";
+
+      activeOpacity = 0.9;
+      inactiveOpacity = 0.7;
+      opacityRules = [
+        "100:class_g = 'dolphin' && !_NET_WM_STATE@:32a"            
+        "100:class_g = 'firefox-aurora' && !_NET_WM_STATE@:32a"
+        "100:class_g = 'chromium-browswe' && !_NET_WM_STATE@:32a"	
+	"100:class_g = 'gvenview' && !_NET_WM_STATE@:32a"
+	"100:class_g = 'TelegramDesktop' && !_NET_WM_STATE@:32a"
+
+        # Setting hidden windows to full transparency, making them invisible.
+        "0:_NET_WM_STATE@:32a *= '_NET_WM_STATE_HIDDEN'"
+	];
+      
+      fade = true;
+      fadeDelta = 15;
+      fadeSteps = [ 0.04 0.04 ];
+      
+      # shadow = true;      
+      # shadowOpacity = 0.75;
+      };
+  };
 
   services.xserver = {
     # Enable touchpad support
