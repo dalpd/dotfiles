@@ -32,12 +32,19 @@
   networking.interfaces.wlp1s0.useDHCP = true;
   networking.networkmanager.enable = true;
 
-  sound.enable = true;  
+  # Enabled for easyeffects.
+  programs.dconf.enable = true;  
   programs.light.enable = true;  
-  hardware = {
-    pulseaudio.enable = true;
-    bluetooth.enable = true;
-  };
+  hardware.bluetooth.enable = true;
+
+  # Pipewire
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+  };  
 
   users.users.dad = {
     isNormalUser = true;
@@ -50,11 +57,12 @@
     victor-mono
   ];
 
-  home-manager.users.dad = { pkgs, ... }: {
-    
+  home-manager.users.dad = { pkgs, ... }: {    
     home.homeDirectory = "/home/dad";
     home.stateVersion = "22.11";
 
+    services.easyeffects.enable = true;
+    
     programs.bash = {
       enable = true;
       historyFile = "/home/dad/.bash_alternative_history";
@@ -72,8 +80,12 @@
       };
     };
     programs.emacs.enable = true;
-    programs.home-manager.enable = true;    
+    programs.rofi = {
+      enable = true;
+      location = "top";
+    };
 
+    programs.home-manager.enable = true;    
     home.packages = (import ./home.nix pkgs).packages;    
   };  
 
@@ -89,38 +101,33 @@
 
     # Enable X11
     xserver.enable = true;
-
+    
     # Standalone compositor for Xorg
     picom = {
       enable = true;
       backend = "glx";
 
       activeOpacity = 0.9;
-      inactiveOpacity = 0.7;
+      inactiveOpacity = 0.75;
       opacityRules = [
-        "100:class_g = 'dolphin' && !_NET_WM_STATE@:32a"            
         "100:class_g = 'firefox-aurora' && !_NET_WM_STATE@:32a"
-        "100:class_g = 'chromium-browswe' && !_NET_WM_STATE@:32a"	
-	"100:class_g = 'gvenview' && !_NET_WM_STATE@:32a"
+        "100:class_g = 'Chromium-browser' && !_NET_WM_STATE@:32a"
+        "100:class_g = 'dolphin' && !_NET_WM_STATE@:32a"	
+	"100:class_g = 'gwenview' && !_NET_WM_STATE@:32a"
+	"100:class_g = 'okular' && !_NET_WM_STATE@:32a"
 	"100:class_g = 'TelegramDesktop' && !_NET_WM_STATE@:32a"
-
-        # Setting hidden windows to full transparency, making them invisible.
-        "0:_NET_WM_STATE@:32a *= '_NET_WM_STATE_HIDDEN'"
 	];
       
       fade = true;
       fadeDelta = 15;
       fadeSteps = [ 0.04 0.04 ];
-      
-      # shadow = true;      
-      # shadowOpacity = 0.75;
       };
   };
 
   services.xserver = {
+    displayManager.sddm.enable = true;  
     # Enable touchpad support
     libinput.enable = true;      
-    displayManager.sddm.enable = true;
     windowManager.xmonad = {
       enable = true;
       enableContribAndExtras = true;
