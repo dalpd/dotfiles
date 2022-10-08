@@ -1,4 +1,4 @@
--- | @dalpd's XMonad config.
+-- | @dalpd's XMonad config
 import qualified Data.Map        as M
 import Graphics.X11.ExtraTypes.XF86
 import System.Exit
