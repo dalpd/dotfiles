@@ -6,13 +6,18 @@ import XMonad.Actions.SpawnOn
 import XMonad.Hooks.EwmhDesktops
 import qualified XMonad.Hooks.ManageDocks as Docks
 import XMonad.Hooks.SetWMName
+import XMonad.Layout.Accordion
+import XMonad.Layout.DwmStyle
 import XMonad.Layout.NoBorders
 import XMonad.Layout.TwoPane
 import XMonad.Layout.Tabbed
 import XMonad.Layout.Combo
+import XMonad.Layout.Master
 import XMonad.Layout.Maximize
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
+import XMonad.Layout.NoFrillsDecoration
+import XMonad.Layout.Renamed
 import XMonad.Layout.Spacing
 import XMonad.Layout.WindowNavigation
 import qualified XMonad.StackSet as W
@@ -31,6 +36,7 @@ myFocusedBorderColor = "#FCB3FC"
 myFocusFollowsMouse = True
 
 ------------------------------------------------------------------------------
+myKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     [ ((modMask              , xK_Return), spawn $ XMonad.terminal conf)
     , ((modMask              , xK_d     ), spawn "rofi -show drun")
@@ -54,8 +60,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     , ((modMask,               xK_Tab   ), windows W.focusDown)
     , ((mod1Mask,              xK_Tab   ), windows W.focusDown)
     , ((modMask,               xK_j     ), windows W.focusDown)
-    , ((modMask,               xK_k     ), windows W.focusUp  )
-    , ((modMask,               xK_m     ), windows W.focusMaster  )
+    , ((modMask,               xK_k     ), windows W.focusUp)
+    , ((modMask,               xK_m     ), windows W.focusMaster)
     , ((modMask .|. shiftMask, xK_Return), windows W.swapMaster)
     , ((modMask .|. shiftMask, xK_j     ), windows W.swapDown  )
     , ((modMask .|. shiftMask, xK_k     ), windows W.swapUp    )
@@ -105,22 +111,21 @@ myLayout =
   . smartBorders
   . mkToggle (NOBORDERS ?? FULL ?? EOT)
   . mkToggle (single MIRROR)
-  $ tiled
-  ||| noBorders Full
-  ||| tab
-  ||| latex
+  $ layouts
   where
     nmaster = 1
     ratio   = 1/2
     delta   = 3/100
 
     addSpacing = spacingRaw False (Border 8 8 8 8) True (Border 8 8 8 8) True
-    tiled = maximize (Tall nmaster delta ratio)
+    bared = noFrillsDeco shrinkText def
+
+    layouts = tiled ||| accordion ||| fullNoBorders ||| tab
+
+    accordion = bared $ renamed [Replace "2/3"] (mastered (1/100) (2/3) Accordion)
+    fullNoBorders = noBorders Full
     tab = tabbed shrinkText myTabConfig
-    latex =
-      windowNavigation $
-        combineTwo (TwoPane delta 0.45) Full $
-          combineTwo (Mirror (TwoPane delta 0.85)) Full Full
+    tiled = maximize (Tall nmaster delta ratio)
 
     myTabConfig =
       def
@@ -130,19 +135,17 @@ myLayout =
 
 ------------------------------------------------------------------------------
 myManageHook = Docks.manageDocks <+> composeAll
-    [ className =? "Gimp"            --> doFloat
-    , resource  =? "desktop_window"  --> doIgnore
-    , resource  =? "kdesktop"        --> doIgnore
+    [ className =? "Gimp" --> doFloat
     ]
 
 ------------------------------------------------------------------------
 myStartupHook = setWMName "dad's xmonad"
               >> spawnOnce "autorandr hub-monitor-only"
-              >> spawnHere "feh --bg-fill ~/.background-image/kobayashi.jpg"
+              >> spawnHere "feh --bg-fill ~/Documents/the-day-he-arrives.jpg"
 
 ------------------------------------------------------------------------
 main :: IO ()
-main =
+main = do
   xmonad . ewmh $
     def {
       terminal           = myTerminal,

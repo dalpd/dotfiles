@@ -69,7 +69,9 @@
       historyFileSize = 1000000;
       historySize = 100000;
       historyIgnore = [ "ls" "ll"];
-      initExtra = "export PATH=:$PATH:/home/dad/.local/bin:/home/dad/.emacs.d/bin";
+      initExtra =
+      ''export PATH=:$PATH:/home/dad/.local/bin:/home/dad/.emacs.d/bin;
+      '';
     };
     programs.git = {
       enable = true;
@@ -84,6 +86,11 @@
       enable = true;
       location = "top";
     };
+
+    programs.direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+      };
 
     programs.home-manager.enable = true;    
     home.packages = (import ./home.nix pkgs).packages;    

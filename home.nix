@@ -1,30 +1,21 @@
 { pkgs, ... }:
 {  
   packages = with pkgs; [
-      alacritty
+      autorandr
       chromium
       curl
       fd    
       gcc      
       gimp
       gwenview      
-      haskellPackages.ghc
-      haskellPackages.zlib
-      haskellPackages.postgresql-libpq
-      haskellPackages.ghcid
-      haskellPackages.cabal-install
       htop
       i3lock
       plasma-pa
-      haskellPackages.status-notifier-item      
-      dolphin            
-      git      
       okular
       nixos-icons
-      breeze-icons
-      oxygen-icons5
-      libsForQt5.oxygen-icons5
-      libsForQt5.breeze-icons
+      gnome.nautilus
+      # libsForQt5.breeze-icons
+      # libsForQt5.oxygen-icons5
       networkmanager
       networkmanager_dmenu
       firefox-devedition-bin
@@ -35,7 +26,7 @@
       font-awesome
       iosevka
       polybar
-      rofi
+      powertop      
       unzip
       gnumake
       openssl
@@ -43,6 +34,7 @@
       irssi
       guvcview
       pavucontrol
+      playerctl
       mpv
       neofetch
       termonad
@@ -51,6 +43,5 @@
       tdesktop
       xorg.xmodmap
       zlib
-      powertop
     ];
 }
