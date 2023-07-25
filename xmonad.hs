@@ -3,6 +3,7 @@ import qualified Data.Map as M
 import Graphics.X11.ExtraTypes.XF86
 import XMonad
 import XMonad.Actions.SpawnOn
+import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
 import qualified XMonad.Hooks.ManageDocks as Docks
 import XMonad.Hooks.SetWMName
@@ -19,6 +20,7 @@ import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.NoFrillsDecoration
 import XMonad.Layout.Renamed
 import XMonad.Layout.Spacing
+import XMonad.Layout.ThreeColumns
 import XMonad.Layout.WindowNavigation
 import qualified XMonad.StackSet as W
 import qualified XMonad.StackSet as S
@@ -28,7 +30,7 @@ import XMonad.Util.SpawnOnce
 myTerminal      = "termonad"
 myNavigator     = "firefox-devedition"
 myEditor        = "emacs"
-myBorderWidth   = 5
+myBorderWidth   = 4
 myModMask       = mod4Mask
 myWorkspaces    = map show [1..9]
 myNormalBorderColor  = "#333333"
@@ -39,19 +41,11 @@ myFocusFollowsMouse = True
 myKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     [ ((modMask              , xK_Return), spawn $ XMonad.terminal conf)
-    , ((modMask              , xK_d     ), spawn "rofi -show drun")
-    , ((modMask              , xK_w     ), spawn "rofi -show window")
+    , ((modMask              , xK_d     ), spawn "rofi -show drun -show-icons")
+    , ((modMask              , xK_w     ), spawn "rofi -show window -window-thumbnail -show-icons" )
     , ((modMask              , xK_f     ), sendMessage $ Toggle FULL)
     , ((modMask              , xK_v     ), sendMessage $ Toggle MIRROR)
     , ((modMask              , xK_BackSpace), withFocused (sendMessage . maximizeRestore))
-    , ((modMask              , xK_F1    ), spawn $ (XMonad.terminal conf) ++ " -name mutt -e mutt")
-    , ((modMask              , xK_F2    ), spawn $ XMonad.terminal conf)
-    , ((modMask              , xK_F3    ), spawn $ (XMonad.terminal conf) ++ " -name irssi -e irssi")
-    , ((modMask              , xK_F4    ), spawn myNavigator)
-    , ((modMask              , xK_F5    ), spawn myEditor)
-    , ((modMask              , xK_F6    ), spawn $ (XMonad.terminal conf) ++ " -name slrn -e slrn")
-    , ((modMask              , xK_F7    ), spawn $ "short")
-    , ((modMask              , xK_F12   ), spawn $ "xlock -mode blank")
     , ((modMask .|. shiftMask, xK_q     ), kill)
     , ((modMask,               xK_space ), sendMessage NextLayout)
     , ((modMask              , xK_v     ), sendMessage $ Toggle MIRROR)
@@ -65,10 +59,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     , ((modMask .|. shiftMask, xK_Return), windows W.swapMaster)
     , ((modMask .|. shiftMask, xK_j     ), windows W.swapDown  )
     , ((modMask .|. shiftMask, xK_k     ), windows W.swapUp    )
-    , ((modMask .|. controlMask .|. shiftMask, xK_Right), sendMessage $ Move Docks.R)
-    , ((modMask .|. controlMask .|. shiftMask, xK_Left ), sendMessage $ Move Docks.L)
-    , ((modMask .|. controlMask .|. shiftMask, xK_Up   ), sendMessage $ Move Docks.U)
-    , ((modMask .|. controlMask .|. shiftMask, xK_Down ), sendMessage $ Move Docks.D)
     , ((modMask,               xK_h     ), sendMessage Shrink)
     , ((modMask,               xK_l     ), sendMessage Expand)
     , ((modMask,               xK_t     ), withFocused $ windows . W.sink)
@@ -76,7 +66,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     , ((modMask              , xK_semicolon), sendMessage (IncMasterN (-1)))
     , ((modMask              , xK_b     ), sendMessage Docks.ToggleStruts)
     , ((modMask              , xK_q     ), restart "xmonad" True)
-    , ((modMask              , xK_k     ), spawn "i3lock")
+    , ((modMask              , xK_k     ), spawn "xset s activate")
+    , ((modMask              , xK_p     ), spawn "flameshot gui")
     , ((0                    , xK_Print), spawn "scrot -u ~/Pictures/Screenshot_%Y%m%d_%H%M%S.png")
     , ((0                    , xF86XK_MonBrightnessUp), spawn "light -A 5")
     , ((0                    , xF86XK_MonBrightnessDown), spawn "light -U 5")
@@ -120,10 +111,16 @@ myLayout =
     addSpacing = spacingRaw False (Border 8 8 8 8) True (Border 8 8 8 8) True
     bared = noFrillsDeco shrinkText def
 
-    layouts = tiled ||| accordion ||| fullNoBorders ||| tab
+    layouts
+      = tiled
+      ||| accordion
+      ||| tab
+      ||| threeCols
+      ||| threeColsMid
 
     accordion = bared $ renamed [Replace "2/3"] (mastered (1/100) (2/3) Accordion)
-    fullNoBorders = noBorders Full
+    threeCols = ThreeCol 1 (3/100) (1/2)
+    threeColsMid = ThreeColMid 1 (3/100) (1/2)
     tab = tabbed shrinkText myTabConfig
     tiled = maximize (Tall nmaster delta ratio)
 
@@ -136,28 +133,30 @@ myLayout =
 ------------------------------------------------------------------------------
 myManageHook = Docks.manageDocks <+> composeAll
     [ className =? "Gimp" --> doFloat
+    , className =? "TelegramDesktop" --> doF (W.shift "8")
+    , className =? "Spotify" --> doF (W.shift "9")
     ]
 
 ------------------------------------------------------------------------
 myStartupHook = setWMName "dad's xmonad"
               >> spawnOnce "autorandr hub-monitor-only"
-              >> spawnHere "feh --bg-fill ~/Documents/the-day-he-arrives.jpg"
+              >> spawnOnce "xmodmap -e \"keycode 66 = Shift_L\""
+              >> spawnHere "feh --bg-fill ~/Downloads/IMG_1765.jpeg"
+              >> spawnOnce "spotify"
 
 ------------------------------------------------------------------------
 main :: IO ()
-main = do
-  xmonad . ewmh $
-    def {
-      terminal           = myTerminal,
-      focusFollowsMouse  = myFocusFollowsMouse,
-      borderWidth        = myBorderWidth,
-      modMask            = myModMask,
-      workspaces         = myWorkspaces,
-      normalBorderColor  = myNormalBorderColor,
-      focusedBorderColor = myFocusedBorderColor,
-      keys               = myKeys,
-      mouseBindings      = myMouseBindings,
-      layoutHook         = myLayout,
-      manageHook         = myManageHook,
-      startupHook        = myStartupHook
-      }
+main = xmonad . ewmh $ def {
+  terminal           = myTerminal,
+  focusFollowsMouse  = myFocusFollowsMouse,
+  borderWidth        = myBorderWidth,
+  modMask            = myModMask,
+  workspaces         = myWorkspaces,
+  normalBorderColor  = myNormalBorderColor,
+  focusedBorderColor = myFocusedBorderColor,
+  keys               = myKeys,
+  mouseBindings      = myMouseBindings,
+  layoutHook         = myLayout,
+  manageHook         = myManageHook,
+  startupHook        = myStartupHook
+  }
