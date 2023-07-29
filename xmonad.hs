@@ -1,6 +1,11 @@
 -- |
+import Control.Monad.IO.Class (liftIO)
 import qualified Data.Map as M
+import Data.Maybe
 import Graphics.X11.ExtraTypes.XF86
+import qualified System.Directory as Dir
+import System.FilePath
+import System.Random
 import XMonad
 import XMonad.Actions.SpawnOn
 import XMonad.Hooks.DynamicLog
@@ -43,6 +48,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     [ ((modMask              , xK_Return), spawn $ XMonad.terminal conf)
     , ((modMask              , xK_d     ), spawn "rofi -show drun -show-icons")
     , ((modMask              , xK_w     ), spawn "rofi -show window -window-thumbnail -show-icons" )
+    , ((modMask              , xK_e     ), spawn "rofi -modi \"clipboard:greenclip print\" -show clipboard -run-command '{cmd}'" )
     , ((modMask              , xK_f     ), sendMessage $ Toggle FULL)
     , ((modMask              , xK_v     ), sendMessage $ Toggle MIRROR)
     , ((modMask              , xK_BackSpace), withFocused (sendMessage . maximizeRestore))
@@ -95,8 +101,8 @@ myMouseBindings (XConfig {XMonad.modMask = modMask}) = M.fromList $
     ]
 
 ------------------------------------------------------------------------------
-myLayout =
-  id
+myLayout
+  = id
   . Docks.avoidStruts
   . addSpacing
   . smartBorders
@@ -131,18 +137,31 @@ myLayout =
         }
 
 ------------------------------------------------------------------------------
-myManageHook = Docks.manageDocks <+> composeAll
-    [ className =? "Gimp" --> doFloat
-    , className =? "TelegramDesktop" --> doF (W.shift "8")
-    , className =? "Spotify" --> doF (W.shift "9")
-    ]
+myManageHook
+  = Docks.manageDocks <+> composeAll
+  [ className =? "Gimp" --> doFloat
+  , className =? "TelegramDesktop" --> doF (W.shift "8")
+  , className =? "Spotify" --> doF (W.shift "9")
+  ]
 
 ------------------------------------------------------------------------
-myStartupHook = setWMName "dad's xmonad"
-              >> spawnOnce "autorandr hub-monitor-only"
-              >> spawnOnce "xmodmap -e \"keycode 66 = Shift_L\""
-              >> spawnHere "feh --bg-fill ~/Downloads/IMG_1765.jpeg"
-              >> spawnOnce "spotify"
+setRandomBackground = do
+  pwd <- liftIO Dir.getCurrentDirectory
+  imageList <- liftIO $ Dir.listDirectory (pwd </> imagesSubPath)
+  randomIndex <- fst . uniformR (0, length imageList) <$> initStdGen
+  let selectImageName = M.lookup randomIndex $ M.fromList $ zip [0..] imageList
+      selectImagePath = pwd </> imagesSubPath </> fromMaybe defaultImageName selectImageName
+  spawnHere $ "feh --bg-fill " <> selectImagePath
+  where
+    defaultImageName = "desktop.jpg"
+    imagesSubPath = "Documents/images"
+
+------------------------------------------------------------------------
+myStartupHook = do
+  setWMName "dad's xmonad"
+  spawnOnce "xmodmap -e \"keycode 66 = Shift_L\""
+  spawnOnce "autorandr hub-monitor-only"
+  setRandomBackground
 
 ------------------------------------------------------------------------
 main :: IO ()
